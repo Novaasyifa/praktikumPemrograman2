@@ -1,0 +1,135 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class FormPendaftaranNasabah {
+
+    // Membuat field dan komponen form
+    private static JTextField namaField;
+    private static JList<String> jenisTabunganList;
+    private static JSpinner transaksiSpinner, tanggalLahirSpinner;
+    private static JPasswordField passwordField, konfirmasiPasswordField;
+    private static JTextArea outputArea;
+
+    private static void buatDanTampilkanGUI() {
+        // Membuat frame utama
+        JFrame frame = new JFrame("Form Pendaftaran Nasabah Bank");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+
+        // Membuat panel untuk input form
+        JPanel formPanel = new JPanel(new GridLayout(7, 2));
+
+        // Input Nama
+        formPanel.add(new JLabel("Nama:"));
+        namaField = new JTextField();
+        formPanel.add(namaField);
+
+        // Input Jenis Tabungan menggunakan JList
+        formPanel.add(new JLabel("Jenis Tabungan:"));
+        String[] jenisTabungan = {"Tabungan Simpanan", "Tabungan Giro", "Deposito", "Tabungan Berjangka"};
+        jenisTabunganList = new JList<>(jenisTabungan);
+        jenisTabunganList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        formPanel.add(new JScrollPane(jenisTabunganList));
+
+        // Input Frekuensi Transaksi per bulan menggunakan JSpinner (1-100)
+        formPanel.add(new JLabel("Frekuensi Transaksi (per bulan):"));
+        transaksiSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+        formPanel.add(transaksiSpinner);
+
+        // Input Tanggal Lahir menggunakan JSpinner
+        formPanel.add(new JLabel("Tanggal Lahir:"));
+        tanggalLahirSpinner = new JSpinner(new SpinnerDateModel());
+        JSpinner.DateEditor editorTanggal = new JSpinner.DateEditor(tanggalLahirSpinner, "dd/MM/yyyy");
+        tanggalLahirSpinner.setEditor(editorTanggal);
+        formPanel.add(tanggalLahirSpinner);
+
+        // Input Password
+        formPanel.add(new JLabel("Password:"));
+        passwordField = new JPasswordField();
+        formPanel.add(passwordField);
+
+        // Input Konfirmasi Password
+        formPanel.add(new JLabel("Konfirmasi Password:"));
+        konfirmasiPasswordField = new JPasswordField();
+        formPanel.add(konfirmasiPasswordField);
+
+        // Area Output
+        outputArea = new JTextArea(5, 30);
+        outputArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(outputArea);
+        frame.add(scrollPane, BorderLayout.SOUTH);
+
+        // Tombol untuk Submit dan Reset form
+        JPanel buttonPanel = new JPanel();
+        JButton tombolSubmit = new JButton("Submit");
+        JButton tombolReset = new JButton("Reset");
+
+        buttonPanel.add(tombolSubmit);
+        buttonPanel.add(tombolReset);
+        frame.add(buttonPanel, BorderLayout.NORTH);
+
+        // Tambahkan action listener untuk tombol submit
+        tombolSubmit.addActionListener(e -> prosesSubmit());
+
+        // Tambahkan action listener untuk tombol reset
+        tombolReset.addActionListener(e -> resetForm());
+
+        // Menambahkan menu bar dengan opsi Reset dan Exit
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("Opsi");
+        JMenuItem menuItemReset = new JMenuItem("Reset");
+        JMenuItem menuItemExit = new JMenuItem("Keluar");
+        menuItemReset.addActionListener(e -> resetForm());
+        menuItemExit.addActionListener(e -> System.exit(0));
+
+        menu.add(menuItemReset);
+        menu.add(menuItemExit);
+        menuBar.add(menu);
+        frame.setJMenuBar(menuBar);
+
+        // Menambahkan panel form ke frame
+        frame.add(formPanel, BorderLayout.CENTER);
+        
+        // Pengaturan akhir frame
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    // Proses submit form
+    private static void prosesSubmit() {
+        String nama = namaField.getText();
+        String jenisTabungan = jenisTabunganList.getSelectedValue();
+        int frekuensiTransaksi = (int) transaksiSpinner.getValue();
+        String password = new String(passwordField.getPassword());
+        String konfirmasiPassword = new String(konfirmasiPasswordField.getPassword());
+        java.util.Date tanggalLahir = (java.util.Date) tanggalLahirSpinner.getValue();
+
+        // Cek apakah password dan konfirmasi password cocok
+        String pesanCocokPassword = password.equals(konfirmasiPassword) ? "Password Cocok!" : "Password tidak cocok.";
+
+        // Menampilkan hasil inputan di output area
+        outputArea.setText("Detail Pendaftaran:\n");
+        outputArea.append("Nama: " + nama + "\n");
+        outputArea.append("Jenis Tabungan: " + jenisTabungan + "\n");
+        outputArea.append("Frekuensi Transaksi per bulan: " + frekuensiTransaksi + "\n");
+        outputArea.append("Tanggal Lahir: " + tanggalLahir + "\n");
+        outputArea.append(pesanCocokPassword + "\n");
+    }
+
+    // Mereset form
+    private static void resetForm() {
+        namaField.setText("");
+        jenisTabunganList.clearSelection();
+        transaksiSpinner.setValue(1);
+        passwordField.setText("");
+        konfirmasiPasswordField.setText("");
+        outputArea.setText("");
+        tanggalLahirSpinner.setValue(new java.util.Date());
+    }
+
+    public static void main(String[] args) {
+        javax.swing.SwingUtilities.invokeLater(FormPendaftaranNasabah::buatDanTampilkanGUI);
+    }
+}
